@@ -27,12 +27,12 @@ TauJet::TauJet(const pat::Jet* _jet, size_t _jetIndex) :
 {
 }
 
-TauJet::TauJet(const pat::Tau* _tau, size_t _tauIndex) :
+TauJet::TauJet(const reco::PFTau* _tau, size_t _tauIndex) :
     jet(nullptr), tau(_tau), jetTauMatch(JetTauMatch::NoMatch), jetIndex(-1), tauIndex(static_cast<int>(_tauIndex))
 {
 }
 
-TauJet::TauJet(const pat::Jet* _jet, const pat::Tau* _tau, JetTauMatch _jetTauMatch, size_t _jetIndex,
+TauJet::TauJet(const pat::Jet* _jet, const reco::PFTau* _tau, JetTauMatch _jetTauMatch, size_t _jetIndex,
                size_t _tauIndex) :
     jet(_jet), tau(_tau), jetTauMatch(_jetTauMatch), jetIndex(static_cast<int>(_jetIndex)),
     tauIndex(static_cast<int>(_tauIndex))
@@ -40,8 +40,8 @@ TauJet::TauJet(const pat::Jet* _jet, const pat::Tau* _tau, JetTauMatch _jetTauMa
 }
 
 TauJetBuilder::TauJetBuilder(const TauJetBuilderSetup& setup, const pat::JetCollection& jets,
-                             const pat::TauCollection& taus, const pat::PackedCandidateCollection& cands,
-                             const pat::ElectronCollection& electrons, const pat::MuonCollection& muons,
+                             const std::vector<reco::PFTau>& taus, const std::vector<reco::PFCandidate>& cands,
+                             const std::vector<reco::RecoEcalCandidate>& electrons, const reco::MuonCollection& muons,
                              const reco::GenParticleCollection* genParticles) :
     setup_(setup), jets_(jets), taus_(taus), cands_(cands), electrons_(electrons), muons_(muons),
     genParticles_(genParticles)
@@ -67,7 +67,7 @@ std::vector<TauJet> TauJetBuilder::Build()
 
     if(setup_.forceTauJetMatch && !availableTaus_.empty()) {
         for(size_t tau_index : availableTaus_) {
-            const pat::Tau& tau = taus_.at(tau_index);
+            const reco::PFTau& tau = taus_.at(tau_index);
             std::cout << "Missing tau: (" << tau.pt() << ", " << tau.eta() << ", " << tau.phi() << ")" << std::endl;
         }
         for(const pat::Jet& jet : jets_) {
@@ -78,7 +78,7 @@ std::vector<TauJet> TauJetBuilder::Build()
     }
 
     for(size_t tauIndex : availableTaus_) {
-        const pat::Tau& tau = taus_.at(tauIndex);
+        const reco::PFTau& tau = taus_.at(tauIndex);
         tauJets.emplace_back(&tau, tauIndex);
         processedTaus_.insert(tauIndex);
     }
@@ -110,48 +110,48 @@ std::vector<TauJet> TauJetBuilder::Build()
     return tauJets;
 }
 
-bool TauJetBuilder::IsJetDaughter(const pat::Jet& jet, const pat::PackedCandidate& cand)
+bool TauJetBuilder::IsJetDaughter(const pat::Jet& jet, const reco::PFCandidate& cand)
 {
     const size_t nDaughters = jet.numberOfDaughters();
     for(size_t n = 0; n < nDaughters; ++n) {
         const auto& daughter = jet.daughterPtr(n);
-        auto jetCand = dynamic_cast<const pat::PackedCandidate*>(daughter.get());
+        auto jetCand = dynamic_cast<const reco::PFCandidate*>(daughter.get());
         if(jetCand == &cand)
             return true;
     }
     return false;
 }
 
-bool TauJetBuilder::IsTauSignalCand(const pat::Tau& tau, const pat::PackedCandidate& cand)
+bool TauJetBuilder::IsTauSignalCand(const reco::PFTau& tau, const reco::PFCandidate& cand)
 {
     for(const auto& signalCandBase : tau.signalCands()) {
-        auto signalCand = dynamic_cast<const pat::PackedCandidate*>(signalCandBase.get());
+        auto signalCand = dynamic_cast<const reco::PFCandidate*>(signalCandBase.get());
         if(signalCand == &cand)
             return true;
     }
     return false;
 }
 
-bool TauJetBuilder::IsTauIsoCand(const pat::Tau& tau, const pat::PackedCandidate& cand)
+bool TauJetBuilder::IsTauIsoCand(const reco::PFTau& tau, const reco::PFCandidate& cand)
 {
     for(const auto& isoCandBase : tau.isolationCands()) {
-        auto isoCand = dynamic_cast<const pat::PackedCandidate*>(isoCandBase.get());
+        auto isoCand = dynamic_cast<const reco::PFCandidate*>(isoCandBase.get());
         if(isoCand == &cand)
             return true;
     }
     return false;
 }
 
-bool TauJetBuilder::IsLeadChargedHadrCand(const pat::Tau& tau, const pat::PackedCandidate& cand)
+bool TauJetBuilder::IsLeadChargedHadrCand(const reco::PFTau& tau, const reco::PFCandidate& cand)
 {
-    auto leadChargedHadrCand = dynamic_cast<const pat::PackedCandidate*>(tau.leadChargedHadrCand().get());
+    auto leadChargedHadrCand = dynamic_cast<const reco::PFCandidate*>(tau.leadChargedHadrCand().get());
     return leadChargedHadrCand == &cand;
 }
 
 void TauJetBuilder::MatchJetsAndTaus(JetTauMatch matchStrategy, std::vector<TauJet>& tauJets)
 {
     for(size_t tauIndex : availableTaus_) {
-        const pat::Tau& tau = taus_.at(tauIndex);
+        const reco::PFTau& tau = taus_.at(tauIndex);
         size_t jetIndex;
         if(FindJet(tau, matchStrategy, jetIndex)) {
             const pat::Jet& jet = jets_.at(jetIndex);
@@ -165,9 +165,9 @@ void TauJetBuilder::MatchJetsAndTaus(JetTauMatch matchStrategy, std::vector<TauJ
     UpdateAvailable(availableTaus_, processedTaus_);
 }
 
-bool TauJetBuilder::FindJet(const pat::Tau& tau, JetTauMatch matchStrategy, size_t& matchedJetIndex) const
+bool TauJetBuilder::FindJet(const reco::PFTau& tau, JetTauMatch matchStrategy, size_t& matchedJetIndex) const
 {
-    auto leadChargedHadrCand = dynamic_cast<const pat::PackedCandidate*>(tau.leadChargedHadrCand().get());
+    auto leadChargedHadrCand = dynamic_cast<const reco::PFCandidate*>(tau.leadChargedHadrCand().get());
     double matchDR2 = setup_.tauJetMatchDeltaR2Threshold;
     for(size_t jetIndex : availableJets_) {
         if(processedJets_.count(jetIndex)) continue;
@@ -190,7 +190,7 @@ bool TauJetBuilder::FindJet(const pat::Tau& tau, JetTauMatch matchStrategy, size
     return matchStrategy == JetTauMatch::dR && matchDR2 < setup_.tauJetMatchDeltaR2Threshold;
 }
 
-bool TauJetBuilder::GetMatchReferences(const pat::Jet* jet, const pat::Tau* tau,
+bool TauJetBuilder::GetMatchReferences(const pat::Jet* jet, const reco::PFTau* tau,
                                        PolarLorentzVector& ref_p4, double& deltaR2) const
 {
     if(jet != nullptr && !setup_.useOnlyTauObjectMatch) {
@@ -206,7 +206,7 @@ bool TauJetBuilder::GetMatchReferences(const pat::Jet* jet, const pat::Tau* tau,
     return false;
 }
 
-std::vector<PFCandDesc> TauJetBuilder::FindMatchedPFCandidates(const pat::Jet* jet, const pat::Tau* tau) const
+std::vector<PFCandDesc> TauJetBuilder::FindMatchedPFCandidates(const pat::Jet* jet, const reco::PFTau* tau) const
 {
     PolarLorentzVector ref_p4;
     double deltaR2;
@@ -227,12 +227,12 @@ std::vector<PFCandDesc> TauJetBuilder::FindMatchedPFCandidates(const pat::Jet* j
     return matched_cands;
 }
 
-std::vector<const pat::Electron*> TauJetBuilder::FindMatchedElectrons(const pat::Jet* jet, const pat::Tau* tau) const
+std::vector<const reco::RecoEcalCandidate*> TauJetBuilder::FindMatchedElectrons(const pat::Jet* jet, const reco::PFTau* tau) const
 {
     PolarLorentzVector ref_p4;
     double deltaR2;
     const bool has_ref = GetMatchReferences(jet, tau, ref_p4, deltaR2);
-    std::vector<const pat::Electron*> matched_electrons;
+    std::vector<const reco::RecoEcalCandidate*> matched_electrons;
     if(has_ref) {
         for(const auto& ele : electrons_) {
             if(ROOT::Math::VectorUtil::DeltaR2(ref_p4, ele.polarP4()) >= deltaR2) continue;
@@ -242,12 +242,12 @@ std::vector<const pat::Electron*> TauJetBuilder::FindMatchedElectrons(const pat:
     return matched_electrons;
 }
 
-std::vector<const pat::Muon*> TauJetBuilder::FindMatchedMuons(const pat::Jet* jet, const pat::Tau* tau) const
+std::vector<const reco::Muon*> TauJetBuilder::FindMatchedMuons(const pat::Jet* jet, const reco::PFTau* tau) const
 {
     PolarLorentzVector ref_p4;
     double deltaR2;
     const bool has_ref = GetMatchReferences(jet, tau, ref_p4, deltaR2);
-    std::vector<const pat::Muon*> matched_muons;
+    std::vector<const reco::Muon*> matched_muons;
     if(has_ref) {
         for(const auto& muon : muons_) {
             if(ROOT::Math::VectorUtil::DeltaR2(ref_p4, muon.polarP4()) >= deltaR2) continue;

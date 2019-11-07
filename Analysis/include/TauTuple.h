@@ -103,8 +103,7 @@
     TAU_IDS() \
     /* Tau transverse impact paramters.
        See cmssw/RecoTauTag/RecoTau/plugins/PFTauTransverseImpactParameters.cc for details */ \
-    VAR3(Float_t, tau_dxy_pca_x, tau_dxy_pca_y, tau_dxy_pca_z) /* The point of closest approach (PCA) of
-                                                                  the leadPFChargedHadrCand to the primary vertex */ \
+    /* VAR3(Float_t, tau_dxy_pca_x, tau_dxy_pca_y, tau_dxy_pca_z) The point of closest approach (PCA) of the leadPFChargedHadrCand to the primary vertex */ \
     VAR(Float_t, tau_dxy) /* tau signed transverse impact parameter wrt to the primary vertex */ \
     VAR(Float_t, tau_dxy_error) /* uncertainty of the transverse impact parameter measurement */ \
     VAR(Float_t, tau_ip3d) /* tau signed 3D impact parameter wrt to the primary vertex */ \
@@ -167,54 +166,57 @@
     CAND_VAR(Float_t, hcalFraction) /* fraction of ECAL and HCAL for HF and neutral hadrons
                                        and isolated charged hadrons */ \
     CAND_VAR(Float_t, rawCaloFraction) /* raw ECAL+HCAL energy over candidate energy for isolated charged hadrons */ \
-    /* PAT electrons */ \
+    /* PAT electrons + pfCand ele */ \
     ELE_VAR4(Float_t, pt, eta, phi, mass) /* 4-momentum of the electron */ \
     ELE_VAR(Float_t, cc_ele_energy) /* energy of the first calo cluster in the electron super cluster */ \
     ELE_VAR(Float_t, cc_gamma_energy) /* sum of the energies of additional calo clusters
                                          in the electron super cluster */ \
     ELE_VAR(Int_t, cc_n_gamma) /* number of additional calo clusters in the electron super cluster */ \
-    ELE_VAR(Float_t, trackMomentumAtVtx) /* module of the track momentum at the PCA to the beam spot */ \
-    ELE_VAR(Float_t, trackMomentumAtCalo) /* module of the track momentum extrapolated at the supercluster position
+    CAND_VAR(Float_t, ele_trackMomentumAtVtx) /* module of the track momentum at the PCA to the beam spot */ \
+    CAND_VAR(Float_t, ele_trackMomentumAtCalo) /* module of the track momentum extrapolated at the supercluster position
                                              from the innermost track state */ \
-    ELE_VAR(Float_t, trackMomentumOut) /* module of the track momentum extrapolated at the seed cluster position
+    CAND_VAR(Float_t, ele_trackMomentumOut) /* module of the track momentum extrapolated at the seed cluster position
                                           from the outermost track state */ \
-    ELE_VAR(Float_t, trackMomentumAtEleClus) /* module of the track momentum extrapolated at the ele cluster position
+    CAND_VAR(Float_t, ele_trackMomentumAtEleClus) /* module of the track momentum extrapolated at the ele cluster position
                                                 from the outermost track state */ \
-    ELE_VAR(Float_t, trackMomentumAtVtxWithConstraint) /* module of the track momentum at the PCA to the beam spot
+    CAND_VAR(Float_t, ele_trackMomentumAtVtxWithConstraint) /* module of the track momentum at the PCA to the beam spot
                                                           using bs constraint */ \
-    ELE_VAR(Float_t, ecalEnergy) /*  corrected ECAL energy */ \
-    ELE_VAR(Float_t, ecalEnergy_error) /* uncertanty of the ECAL energy measurement */ \
-    ELE_VAR(Float_t, eSuperClusterOverP) /* supercluster energy / track momentum at the PCA to the beam spot */ \
-    ELE_VAR(Float_t, eSeedClusterOverP) /* seed cluster energy / track momentum at the PCA to the beam spot */ \
-    ELE_VAR(Float_t, eSeedClusterOverPout) /* seed cluster energy / track momentum at calo extrapolated
+    CAND_VAR(Float_t, ele_ecalEnergy) /*  corrected ECAL energy */ \
+    CAND_VAR(Float_t, ele_ecalEnergy_error) /* uncertanty of the ECAL energy measurement */ \
+    CAND_VAR(Float_t, ele_eSuperClusterOverP) /* supercluster energy / track momentum at the PCA to the beam spot */ \
+    CAND_VAR(Float_t, ele_eSeedClusterOverP) /* seed cluster energy / track momentum at the PCA to the beam spot */ \
+    CAND_VAR(Float_t, ele_eSeedClusterOverPout) /* seed cluster energy / track momentum at calo extrapolated
                                               from the outermost track state */ \
-    ELE_VAR(Float_t, eEleClusterOverPout) /* electron cluster energy / track momentum at calo extrapolated
+    CAND_VAR(Float_t, ele_eEleClusterOverPout) /* electron cluster energy / track momentum at calo extrapolated
                                              from the outermost track state */ \
-    ELE_VAR(Float_t, deltaEtaSuperClusterTrackAtVtx) /* supercluster eta - track eta position at calo extrapolated
+    CAND_VAR(Float_t, ele_deltaEtaSuperClusterTrackAtVtx) /* supercluster eta - track eta position at calo extrapolated
                                                         from innermost track state */ \
-    ELE_VAR(Float_t, deltaEtaSeedClusterTrackAtCalo) /* seed cluster eta - track eta position at calo extrapolated
+    CAND_VAR(Float_t, ele_deltaEtaSeedClusterTrackAtCalo) /* seed cluster eta - track eta position at calo extrapolated
                                                         from the outermost track state */ \
-    ELE_VAR(Float_t, deltaEtaEleClusterTrackAtCalo) /* electron cluster eta - track eta position at calo extrapolated
+    CAND_VAR(Float_t, ele_deltaEtaEleClusterTrackAtCalo) /* electron cluster eta - track eta position at calo extrapolated
                                                        from the outermost state */ \
-    ELE_VAR(Float_t, deltaPhiEleClusterTrackAtCalo) /* electron cluster phi - track phi position at calo extrapolated
+    CAND_VAR(Float_t, ele_deltaPhiEleClusterTrackAtCalo) /* electron cluster phi - track phi position at calo extrapolated
                                                        from the outermost track state */ \
-    ELE_VAR(Float_t, deltaPhiSuperClusterTrackAtVtx) /* supercluster phi - track phi position at calo extrapolated
+    CAND_VAR(Float_t, ele_deltaPhiSuperClusterTrackAtVtx) /* supercluster phi - track phi position at calo extrapolated
                                                         from the innermost track state */ \
-    ELE_VAR(Float_t, deltaPhiSeedClusterTrackAtCalo) /* seed cluster phi - track phi position at calo extrapolated
+    CAND_VAR(Float_t, ele_deltaPhiSeedClusterTrackAtCalo) /* seed cluster phi - track phi position at calo extrapolated
                                                         from the outermost track state */ \
-    ELE_VAR2(Int_t, mvaInput_earlyBrem, mvaInput_lateBrem) /* early/late bremsstrahlung is detected:
+    CAND_VAR(Int_t, ele_mvaInput_earlyBrem) /* early bremsstrahlung is detected:
                                                               unknown = -2, could not be evaluated = -1,
                                                               wrong = 0, true = 1 */ \
-    ELE_VAR(Float_t, mvaInput_sigmaEtaEta) /* Sigma-eta-eta with the PF cluster */ \
-    ELE_VAR(Float_t, mvaInput_hadEnergy) /* Associated PF Had Cluster energy */ \
-    ELE_VAR(Float_t, mvaInput_deltaEta) /* PF-cluster GSF track delta-eta */ \
+    CAND_VAR(Int_t, ele_mvaInput_lateBrem) /* late bremsstrahlung is detected:
+                                                            unknown = -2, could not be evaluated = -1,
+                                                            wrong = 0, true = 1 */ \
+    CAND_VAR(Float_t, ele_mvaInput_sigmaEtaEta) /* Sigma-eta-eta with the PF cluster */ \
+    CAND_VAR(Float_t, ele_mvaInput_hadEnergy) /* Associated PF Had Cluster energy */ \
+    CAND_VAR(Float_t, ele_mvaInput_deltaEta) /* PF-cluster GSF track delta-eta */ \
     ELE_VAR(Float_t, gsfTrack_normalizedChi2) /* chi^2 divided by number of degrees of freedom of the GSF track */ \
     ELE_VAR(Int_t, gsfTrack_numberOfValidHits) /* number of valid hits on the GSF track */ \
     ELE_VAR(Float_t, gsfTrack_pt) /* pt of the GSF track */ \
     ELE_VAR(Float_t, gsfTrack_pt_error) /* uncertainty of the pt measurement of the GSF track */ \
-    ELE_VAR(Float_t, closestCtfTrack_normalizedChi2) /* chi^2 divided by number of degrees of freedom
+    CAND_VAR(Float_t, ele_closestCtfTrack_normalizedChi2) /* chi^2 divided by number of degrees of freedom
                                                         of the closest CTF track */ \
-    ELE_VAR(Int_t, closestCtfTrack_numberOfValidHits) /* number of valid hits on the closest CTF track */ \
+    CAND_VAR(Int_t, ele_closestCtfTrack_numberOfValidHits) /* number of valid hits on the closest CTF track */ \
     /* PAT muons */ \
     MUON_VAR4(Float_t, pt, eta, phi, mass) /* 4-momentum of the muon */ \
     MUON_VAR(Float_t, dxy) /* signed transverse impact parameter of the inner track wrt to the primary vertex */ \
