@@ -43,15 +43,15 @@ private:
 };
 
 #define TAU_IDS() \
-    TAU_ID(cutBasedRelIso, "by{wp}cutBasedRelIso", true, \
+    TAU_ID(tau_cutBasedRelIso, "tau_by{wp}cutBasedRelIso", true, \
            "Loose Medium Tight") \
-    TAU_ID(cutBasedAbsIso, "by{wp}cutBasedRelIso", true, \
+    TAU_ID(tau_cutBasedAbsIso, "tau_by{wp}cutBasedRelIso", true, \
            "Loose Medium Tight") \
-    TAU_ID(byDeepTau2017v2VSe, "by{wp}DeepTau2017v2VSe{raw}", true, \
+    TAU_ID(tau_byDeepTau2017v2VSe, "tau_by{wp}DeepTau2017v2VSe{raw}", true, \
        "VVVLoose VVLoose VLoose Loose Medium Tight VTight VVTight") \
-    TAU_ID(byDeepTau2017v2VSmu, "by{wp}DeepTau2017v2VSmu{raw}", true, \
+    TAU_ID(tau_byDeepTau2017v2VSmu, "tau_by{wp}DeepTau2017v2VSmu{raw}", true, \
        "VLoose Loose Medium Tight") \
-    TAU_ID(byDeepTau2017v2VSjet, "by{wp}DeepTau2017v2VSjet{raw}", true, \
+    TAU_ID(tau_byDeepTau2017v2VSjet, "tau_by{wp}DeepTau2017v2VSjet{raw}", true, \
        "VVVLoose VVLoose VLoose Loose Medium Tight VTight VVTight") \
     /**/
 

@@ -1,4 +1,0 @@
-Automatic
-wantSummary=True
-
-Tau_Pt-15to3000-gun  1000    /TauGun_Pt-15to3000_13TeV_pythia8/RunIIFall18GS-102X_upgrade2018_realistic_v9-v2/GEN-SIM

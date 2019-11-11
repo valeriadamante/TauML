@@ -1,4 +1,0 @@
-Automatic
-wantSummary=True
-
-TTToSemiLeptonic                    1000	/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIWinter19PFCalib18wmLHEGS-105X_upgrade2018_realistic_v4-v2/GEN-SIM

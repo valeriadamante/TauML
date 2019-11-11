@@ -1,0 +1,9 @@
+wantSummary=True
+
+ZprimeToTauTau_M-1000               /ZprimeToTauTau_M-1000_TuneCP5_13TeV-pythia8-tauola/RunIIFall18GS-102X_upgrade2018_realistic_v11-v1/GEN-SIM
+ZprimeToTauTau_M-1500               /ZprimeToTauTau_M-1500_TuneCP5_13TeV-pythia8-tauola/RunIIFall18GS-102X_upgrade2018_realistic_v11-v1/GEN-SIM
+ZprimeToTauTau_M-2000               /ZprimeToTauTau_M-2000_TuneCP5_13TeV-pythia8-tauola/RunIIFall18GS-102X_upgrade2018_realistic_v11-v1/GEN-SIM
+ZprimeToTauTau_M-2500               /ZprimeToTauTau_M-2500_TuneCP5_13TeV-pythia8-tauola/RunIIFall18GS-102X_upgrade2018_realistic_v11-v1/GEN-SIM
+ZprimeToTauTau_M-3000               /ZprimeToTauTau_M-3000_TuneCP5_13TeV-pythia8-tauola/RunIIFall18GS-102X_upgrade2018_realistic_v11-v1/GEN-SIM
+ZprimeToTauTau_M-3500               /ZprimeToTauTau_M-3500_TuneCP5_13TeV-pythia8-tauola/RunIIFall18GS-102X_upgrade2018_realistic_v11-v1/GEN-SIM
+ZprimeToTauTau_M-4000               /ZprimeToTauTau_M-4000_TuneCP5_13TeV-pythia8-tauola/RunIIFall18GS-102X_upgrade2018_realistic_v11-v1/GEN-SIM

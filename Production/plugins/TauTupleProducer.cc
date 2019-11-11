@@ -360,35 +360,35 @@ private:
             // tauTuple().tau_decayModeFinding = has_tau ? tau->tauID("decayModeFinding") > 0.5f : default_int_value;
             tauTuple().tau_decayModeFindingNewDMs = has_tau ? decayModesNew->value(tauJet.tauIndex)
                                                             : default_int_value;
-            tauTuple().chargedIsoPtSum = has_tau ? chargedIsoPtSum->value(tauJet.tauIndex) : default_value;
-            tauTuple().chargedIsoPtSumdR03 = has_tau ? chargedIsoPtSumdR03->value(tauJet.tauIndex) : default_value;
-            tauTuple().footprintCorrection = has_tau ? footprintCorrection->value(tauJet.tauIndex) : default_value;
-            tauTuple().footprintCorrectiondR03 = has_tau ? footprintCorrectiondR03->value(tauJet.tauIndex) : default_value;
-            tauTuple().neutralIsoPtSum = has_tau ? neutralIsoPtSum->value(tauJet.tauIndex) : default_value;
-            tauTuple().neutralIsoPtSumWeight = has_tau ? neutralIsoPtSumWeight->value(tauJet.tauIndex) : default_value;
-            tauTuple().neutralIsoPtSumWeightdR03 = has_tau ? neutralIsoPtSumWeightdR03->value(tauJet.tauIndex) : default_value;
-            tauTuple().neutralIsoPtSumdR03 = has_tau ? neutralIsoPtSumdR03->value(tauJet.tauIndex) : default_value;
-            tauTuple().photonPtSumOutsideSignalCone = has_tau ? photonPtSumOutsideSignalCone->value(tauJet.tauIndex)
+            tauTuple().tau_chargedIsoPtSum = has_tau ? chargedIsoPtSum->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_chargedIsoPtSumdR03 = has_tau ? chargedIsoPtSumdR03->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_footprintCorrection = has_tau ? footprintCorrection->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_footprintCorrectiondR03 = has_tau ? footprintCorrectiondR03->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_neutralIsoPtSum = has_tau ? neutralIsoPtSum->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_neutralIsoPtSumWeight = has_tau ? neutralIsoPtSumWeight->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_neutralIsoPtSumWeightdR03 = has_tau ? neutralIsoPtSumWeightdR03->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_neutralIsoPtSumdR03 = has_tau ? neutralIsoPtSumdR03->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_photonPtSumOutsideSignalCone = has_tau ? photonPtSumOutsideSignalCone->value(tauJet.tauIndex)
                                                               : default_value;
-            tauTuple().photonPtSumOutsideSignalConedR03 = has_tau ? photonPtSumOutsideSignalConedR03->value(tauJet.tauIndex)
+            tauTuple().tau_photonPtSumOutsideSignalConedR03 = has_tau ? photonPtSumOutsideSignalConedR03->value(tauJet.tauIndex)
                                                                   : default_value;
-            tauTuple().puCorrPtSum = has_tau ? puCorrPtSum->value(tauJet.tauIndex) : default_value;
+            tauTuple().tau_puCorrPtSum = has_tau ? puCorrPtSum->value(tauJet.tauIndex) : default_value;
 
             analysis::TauIdResults cutBasedRelIso;
             cutBasedRelIso.SetResult(analysis::DiscriminatorWP::Loose,looseIsoRel->value(tauJet.tauIndex) > 0.5);
             cutBasedRelIso.SetResult(analysis::DiscriminatorWP::Medium,mediumIsoRel->value(tauJet.tauIndex) > 0.5);
             cutBasedRelIso.SetResult(analysis::DiscriminatorWP::Tight,tightIsoRel->value(tauJet.tauIndex) > 0.5);
-            tauTuple().cutBasedRelIso = cutBasedRelIso.GetResultBits();
+            tauTuple().tau_cutBasedRelIso = cutBasedRelIso.GetResultBits();
 
             analysis::TauIdResults cutBasedAbsIso;
             cutBasedAbsIso.SetResult(analysis::DiscriminatorWP::Loose,looseIsoAbs->value(tauJet.tauIndex) > 0.5);
             cutBasedAbsIso.SetResult(analysis::DiscriminatorWP::Medium,mediumIsoAbs->value(tauJet.tauIndex) > 0.5);
             cutBasedAbsIso.SetResult(analysis::DiscriminatorWP::Tight,tightIsoAbs->value(tauJet.tauIndex) > 0.5);
-            tauTuple().cutBasedAbsIso = cutBasedAbsIso.GetResultBits();
+            tauTuple().tau_cutBasedAbsIso = cutBasedAbsIso.GetResultBits();
 
-            tauTuple().byDeepTau2017v2VSeraw = static_cast<float>(deepTau_VSe->value(tauJet.tauIndex));
-            tauTuple().byDeepTau2017v2VSmuraw = static_cast<float>(deepTau_VSmu->value(tauJet.tauIndex));
-            tauTuple().byDeepTau2017v2VSjetraw = static_cast<float>(deepTau_VSjet->value(tauJet.tauIndex));
+            tauTuple().tau_byDeepTau2017v2VSeraw = static_cast<float>(deepTau_VSe->value(tauJet.tauIndex));
+            tauTuple().tau_byDeepTau2017v2VSmuraw = static_cast<float>(deepTau_VSmu->value(tauJet.tauIndex));
+            tauTuple().tau_byDeepTau2017v2VSjetraw = static_cast<float>(deepTau_VSjet->value(tauJet.tauIndex));
 
             // togli da ntuple
             // tauTuple().tau_dxy_pca_x = has_tau ? tau->dxy_PCA().x() : default_value;
@@ -478,7 +478,7 @@ private:
                     has_tau ? leadChargedCandEtaAtEcalEntrance : default_value;
 
             FillPFCandidates(tauJet.cands);
-            // FillElectrons(tauJet.electrons);
+            FillElectrons(tauJet.electrons);
             FillMuons(tauJet.muons,tauJet.cands);
 
             tauTuple.Fill();

@@ -81,25 +81,25 @@
     VAR(Int_t, tau_decayMode) /* tau decay mode */ \
     VAR(Int_t, tau_decayModeFinding) /* tau passed the old decay mode finding requirements */ \
     VAR(Int_t, tau_decayModeFindingNewDMs) /* tau passed the new decay mode finding requirements */ \
-    VAR(Float_t, chargedIsoPtSum) /* sum of the transverse momentums of charged pf candidates inside
+    VAR(Float_t, tau_chargedIsoPtSum) /* sum of the transverse momentums of charged pf candidates inside
                                      the tau isolation cone with dR < 0.5 */ \
-    VAR(Float_t, chargedIsoPtSumdR03) /* sum of the transverse momentums of charged pf candidates inside
+    VAR(Float_t, tau_chargedIsoPtSumdR03) /* sum of the transverse momentums of charged pf candidates inside
                                          the tau isolation cone with dR < 0.3 */ \
-    VAR(Float_t, footprintCorrection) /* tau footprint correction inside the tau isolation cone with dR < 0.5 */ \
-    VAR(Float_t, footprintCorrectiondR03) /* tau footprint correction inside the tau isolation cone with dR < 0.3 */ \
-    VAR(Float_t, neutralIsoPtSum) /* sum of the transverse momentums of neutral pf candidates inside
+    VAR(Float_t, tau_footprintCorrection) /* tau footprint correction inside the tau isolation cone with dR < 0.5 */ \
+    VAR(Float_t, tau_footprintCorrectiondR03) /* tau footprint correction inside the tau isolation cone with dR < 0.3 */ \
+    VAR(Float_t, tau_neutralIsoPtSum) /* sum of the transverse momentums of neutral pf candidates inside
                                      the tau isolation cone with dR < 0.5 */ \
-    VAR(Float_t, neutralIsoPtSumWeight) /* weighted sum of the transverse momentums of neutral pf candidates inside
+    VAR(Float_t, tau_neutralIsoPtSumWeight) /* weighted sum of the transverse momentums of neutral pf candidates inside
                                            the tau isolation cone with dR < 0.5 */ \
-    VAR(Float_t, neutralIsoPtSumWeightdR03) /* weighted sum of the transverse momentums of neutral pf candidates inside
+    VAR(Float_t, tau_neutralIsoPtSumWeightdR03) /* weighted sum of the transverse momentums of neutral pf candidates inside
                                                the tau isolation cone with dR < 0.3 */ \
-    VAR(Float_t, neutralIsoPtSumdR03) /* sum of the transverse momentums of neutral pf candidates inside
+    VAR(Float_t, tau_neutralIsoPtSumdR03) /* sum of the transverse momentums of neutral pf candidates inside
                                          the tau isolation cone with dR < 0.3 */ \
-    VAR(Float_t, photonPtSumOutsideSignalCone) /* sum of the transverse momentums of photons
+    VAR(Float_t, tau_photonPtSumOutsideSignalCone) /* sum of the transverse momentums of photons
                                                   inside the tau isolation cone with dR < 0.5 */ \
-    VAR(Float_t, photonPtSumOutsideSignalConedR03) /* sum of the transverse momentums of photons inside
+    VAR(Float_t, tau_photonPtSumOutsideSignalConedR03) /* sum of the transverse momentums of photons inside
                                                       the tau isolation cone with dR < 0.3 */ \
-    VAR(Float_t, puCorrPtSum) /* pile-up correction for the sum of the transverse momentums */ \
+    VAR(Float_t, tau_puCorrPtSum) /* pile-up correction for the sum of the transverse momentums */ \
     TAU_IDS() \
     /* Tau transverse impact paramters.
        See cmssw/RecoTauTag/RecoTau/plugins/PFTauTransverseImpactParameters.cc for details */ \

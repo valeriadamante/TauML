@@ -1,5 +1,0 @@
-Automatic
-wantSummary=True
-
-GluGluHToTauTau_M125	1000	/GluGluHToTauTau_M125_14TeV_powheg_pythia8/PhaseIIMTDTDRAutumn18wmLHEGS-103X_upgrade2023_realistic_v2-v1/GEN-SIM
-VBFHToTauTau_M125	    1000	/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISpring18DR-NZSPU28to70_100X_upgrade2018_realistic_v10-v1/GEN-SIM-RAW
