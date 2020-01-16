@@ -74,15 +74,15 @@ private:
             if(isMC) {
                 edm::Handle<std::vector<reco::GenParticle>> genParticles;
                 event.getByToken(genParticles_token, genParticles);
-                const auto match = gen_truth::LeptonGenMatch(tau.polarP4(), *genParticles);
+                const auto match = analysis::gen_truth::LeptonGenMatch(tau.polarP4(), *genParticles);
                 const auto gen_match = match.match;
 
-                output_tuple().gen_e = gen_match == GenLeptonMatch::Electron
-                        || gen_match == GenLeptonMatch::TauElectron;
-                output_tuple().gen_mu = gen_match == GenLeptonMatch::Muon
-                        || gen_match == GenLeptonMatch::TauMuon;
-                output_tuple().gen_tau = gen_match == GenLeptonMatch::Tau;
-                output_tuple().gen_jet = gen_match == GenLeptonMatch::NoMatch;
+                output_tuple().gen_e = gen_match == analysis::GenLeptonMatch::Electron
+                        || gen_match == analysis::GenLeptonMatch::TauElectron;
+                output_tuple().gen_mu = gen_match == analysis::GenLeptonMatch::Muon
+                        || gen_match == analysis::GenLeptonMatch::TauMuon;
+                output_tuple().gen_tau = gen_match == analysis::GenLeptonMatch::Tau;
+                output_tuple().gen_jet = gen_match == analysis::GenLeptonMatch::NoMatch;
             }
 
             output_tuple().byDeepTau2017v2VSeraw = tau.tauID("byDeepTau2017v2VSeraw");

@@ -97,12 +97,12 @@ std::vector<TauJet> TauJetBuilder::Build()
         tauJet.muons = FindMatchedMuons(tauJet.jet, tauJet.tau);
         if(genParticles_) {
             if(tauJet.jet) {
-                tauJet.jetGenLeptonMatchResult = gen_truth::LeptonGenMatch(tauJet.jet->polarP4(), *genParticles_);
-                tauJet.jetGenQcdMatchResult = gen_truth::QcdGenMatch(tauJet.jet->polarP4(), *genParticles_);
+                tauJet.jetGenLeptonMatchResult = analysis::gen_truth::LeptonGenMatch(tauJet.jet->polarP4(), *genParticles_);
+                tauJet.jetGenQcdMatchResult = analysis::gen_truth::QcdGenMatch(tauJet.jet->polarP4(), *genParticles_);
             }
             if(tauJet.tau) {
-                tauJet.tauGenLeptonMatchResult = gen_truth::LeptonGenMatch(tauJet.tau->polarP4(), *genParticles_);
-                tauJet.tauGenQcdMatchResult = gen_truth::QcdGenMatch(tauJet.tau->polarP4(), *genParticles_);
+                tauJet.tauGenLeptonMatchResult = analysis::gen_truth::LeptonGenMatch(tauJet.tau->polarP4(), *genParticles_);
+                tauJet.tauGenQcdMatchResult = analysis::gen_truth::QcdGenMatch(tauJet.tau->polarP4(), *genParticles_);
             }
         }
     }

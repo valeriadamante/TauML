@@ -1,4 +1,4 @@
+lumiMask=/afs/cern.ch/work/m/mgrippo/TauTrigger_2019_new/CMSSW_10_6_3/src/TauML/Production/crab/lumimask/qcd_block_lumi.json
 wantSummary=True
 
-
-QCD_Pt-15to7000_Flat           /QCD_Pt-15to7000_TuneCP5_Flat2018_13TeV_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v1/GEN-SIM-RAW
+QCD_Pt-15to7000           /QCD_Pt-15to7000_TuneCP5_Flat2018_13TeV_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v1/GEN-SIM-RAW

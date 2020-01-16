@@ -31,8 +31,8 @@ struct TauJet {
     std::vector<PFCandDesc> cands;
     std::vector<const reco::RecoEcalCandidate*> electrons;
     std::vector<const reco::Muon*> muons;
-    gen_truth::LeptonMatchResult jetGenLeptonMatchResult, tauGenLeptonMatchResult;
-    gen_truth::QcdMatchResult jetGenQcdMatchResult, tauGenQcdMatchResult;
+    analysis::gen_truth::LeptonMatchResult jetGenLeptonMatchResult, tauGenLeptonMatchResult;
+    analysis::gen_truth::QcdMatchResult jetGenQcdMatchResult, tauGenQcdMatchResult;
 
     TauJet(const pat::Jet* _jet, size_t _jetIndex);
     TauJet(const reco::PFTau* _tau, size_t _tauIndex);

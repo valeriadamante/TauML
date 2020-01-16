@@ -24,6 +24,7 @@
 #include "TauML/Production/include/MuonHitMatch.h"
 #include "TauML/Production/include/TauJet.h"
 
+#include "DataFormats/L1Trigger/interface/Tau.h"
 #include "DataFormats/TauReco/interface/PFTau.h"
 #include "DataFormats/TauReco/interface/PFTauDiscriminator.h"
 #include "DataFormats/Candidate/interface/LeafCandidate.h"
@@ -35,6 +36,9 @@
 #include "DataFormats/TauReco/interface/PFTauTransverseImpactParameter.h"
 #include "DataFormats/Common/interface/AssociationVector.h"
 #include "DataFormats/Common/interface/Association.h"
+#include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 
 namespace tau_analysis {
 
@@ -137,6 +141,9 @@ public:
         electrons_token(consumes<std::vector<reco::RecoEcalCandidate>>(cfg.getParameter<edm::InputTag>("electrons"))),
         muons_token(consumes<reco::MuonCollection>(cfg.getParameter<edm::InputTag>("muons"))),
         taus_token(consumes<std::vector<reco::PFTau>>(cfg.getParameter<edm::InputTag>("taus"))),
+        l1Taus_token(consumes<l1t::TauBxCollection>(cfg.getParameter<edm::InputTag>("l1taus"))),
+        caloTowers_token(consumes<CaloTowerCollection>(cfg.getParameter<edm::InputTag>("caloTowers"))),
+        pixelTracks_token(consumes<reco::TrackCollection>(cfg.getParameter<edm::InputTag>("pixelTracks"))),
         //jets_token(consumes<pat::JetCollection>(cfg.getParameter<edm::InputTag>("jets"))),
         cands_token(consumes<std::vector<reco::PFCandidate>>(cfg.getParameter<edm::InputTag>("pfCandidates"))),
         decayMode_token(consumes<reco::PFTauDiscriminator>(cfg.getParameter<edm::InputTag>("decayModeFindingNewDM"))),
@@ -179,6 +186,7 @@ public:
 private:
     static constexpr float default_value = tau_tuple::DefaultFillValue<float>();
     static constexpr int default_int_value = tau_tuple::DefaultFillValue<int>();
+    static constexpr int default_unsigned_value = tau_tuple::DefaultFillValue<unsigned>();
 
     virtual void analyze(const edm::Event& event, const edm::EventSetup&) override
     {
@@ -203,7 +211,7 @@ private:
 
             edm::Handle<std::vector<PileupSummaryInfo>> puInfo;
             event.getByToken(puInfo_token, puInfo);
-            tauTuple().npu = gen_truth::GetNumberOfPileUpInteractions(puInfo);
+            tauTuple().npu = analysis::gen_truth::GetNumberOfPileUpInteractions(puInfo);
         }
 
         const auto& PV = vertices->at(0);
@@ -221,6 +229,15 @@ private:
 
         edm::Handle<std::vector<reco::PFTau>> taus;
         event.getByToken(taus_token, taus);
+
+        edm::Handle<l1t::TauBxCollection> l1Taus;
+        event.getByToken(l1Taus_token, l1Taus);
+
+        edm::Handle<CaloTowerCollection> caloTowers;
+        event.getByToken(caloTowers_token, caloTowers);
+
+        edm::Handle<reco::TrackCollection> pixelTracks;
+        event.getByToken(pixelTracks_token, pixelTracks);
 
         // edm::Handle<pat::JetCollection> jets;
         // event.getByToken(jets_token, jets);
@@ -309,11 +326,19 @@ private:
             const bool has_tau = tauJet.tauIndex >= 0;
             if(!has_tau && !storeJetsWithoutTau) continue;
 
+            const reco::PFTau* tau = tauJet.tau;
+            if(has_tau && !(tau->polarP4().pt() > 20 && std::abs(tau->polarP4().eta()) < 2.3)) continue;
+
+            const reco::PFCandidate* leadChargedHadrCand =
+                    has_tau ? dynamic_cast<const reco::PFCandidate*>(tau->leadChargedHadrCand().get()) : nullptr;
+
+            //if(leadChargedHadrCand  && leadChargedHadrCand->bestTrack() != nullptr && !(std::abs(leadChargedHadrCand->bestTrack()->dz()) < 0.2)) continue;
+
             const auto& leptonGenMatch = has_tau ? tauJet.tauGenLeptonMatchResult : tauJet.jetGenLeptonMatchResult;
             const auto& qcdGenMatch = has_tau ? tauJet.tauGenQcdMatchResult : tauJet.jetGenQcdMatchResult;
 
-            if(requireGenMatch && leptonGenMatch.match == GenLeptonMatch::NoMatch
-                    && qcdGenMatch.match == GenQcdMatch::NoMatch) continue;
+            if(requireGenMatch && leptonGenMatch.match == analysis::GenLeptonMatch::NoMatch
+                    && qcdGenMatch.match == analysis::GenQcdMatch::NoMatch) continue;
 
             tauTuple().jet_index = tauJet.jetIndex;
             tauTuple().jet_pt = has_jet ? static_cast<float>(tauJet.jet->p4().pt()) : default_value;
@@ -343,8 +368,6 @@ private:
             tauTuple().jet_gen_n_c = genJet != nullptr
                     ? static_cast<int>(tauJet.jet->jetFlavourInfo().getcHadrons().size()) : default_int_value;
 
-
-            const reco::PFTau* tau = tauJet.tau;
 
             tauTuple().jetTauMatch = static_cast<int>(tauJet.jetTauMatch);
             tauTuple().tau_index = tauJet.tauIndex;
@@ -411,8 +434,7 @@ private:
             tauTuple().tau_flightLength_z = has_tau ? impactParam->flightLength().z() : default_value;
             tauTuple().tau_flightLength_sig = has_tau ? impactParam->flightLengthSig() : default_value;
 
-            const reco::PFCandidate* leadChargedHadrCand =
-                    has_tau ? dynamic_cast<const reco::PFCandidate*>(tau->leadChargedHadrCand().get()) : nullptr;
+
             tauTuple().tau_dz = leadChargedHadrCand  && leadChargedHadrCand->bestTrack() != nullptr ? leadChargedHadrCand->bestTrack()->dz() : default_value;
             tauTuple().tau_dz_error = leadChargedHadrCand ? leadChargedHadrCand->dzError() : default_value;
 
@@ -477,6 +499,86 @@ private:
             tauTuple().leadChargedCand_etaAtEcalEntrance =
                     has_tau ? leadChargedCandEtaAtEcalEntrance : default_value;
 
+            //L1 part
+            for(auto iter = l1Taus->begin(0); iter != l1Taus->end(0); ++iter) {
+                const double deltaR = ROOT::Math::VectorUtil::DeltaR(tau->polarP4(), iter->polarP4());
+                if(deltaR < 0.5) {
+                    tauTuple().l1Tau_pt.push_back(static_cast<float>(iter->polarP4().pt()));
+                    tauTuple().l1Tau_eta.push_back(static_cast<float>(iter->polarP4().eta()));
+                    tauTuple().l1Tau_phi.push_back(static_cast<float>(iter->polarP4().phi()));
+                    tauTuple().l1Tau_mass.push_back(static_cast<float>(iter->polarP4().mass()));
+                    tauTuple().l1Tau_hwIso.push_back(iter->hwIso());
+                    tauTuple().l1Tau_hwQual.push_back(iter->hwQual());
+                }
+            }
+            //end L1 part
+
+            //calo CaloTowers
+            //std::cout << "CaloJets size: " << caloTowers->size() << std::endl;
+
+            for(auto iter = caloTowers->begin(); iter != caloTowers->end(); ++iter){
+                const double deltaR = ROOT::Math::VectorUtil::DeltaR(tau->polarP4(), iter->polarP4());
+                if(deltaR < 0.5){
+                    tauTuple().calo_pt.push_back(iter->polarP4().pt());
+                    tauTuple().calo_eta.push_back(iter->polarP4().eta());
+                    tauTuple().calo_phi.push_back(iter->polarP4().phi());
+                    tauTuple().calo_energy.push_back(iter->polarP4().energy());
+                    tauTuple().calo_emEnergy.push_back(iter->emEnergy());
+                    tauTuple().calo_hadEnergy.push_back(iter->hadEnergy());
+                    tauTuple().calo_outerEnergy.push_back(iter->outerEnergy());
+                    tauTuple().calo_emPosition_x.push_back(iter->emPosition().x());
+                    tauTuple().calo_emPosition_y.push_back(iter->emPosition().y());
+                    tauTuple().calo_emPosition_z.push_back(iter->emPosition().z());
+                    tauTuple().calo_hadPosition_x.push_back(iter->hadPosition().x());
+                    tauTuple().calo_hadPosition_y.push_back(iter->hadPosition().y());
+                    tauTuple().calo_hadPosition_z.push_back(iter->hadPosition().z());
+                    tauTuple().calo_hadEnergyHeOuterLayer.push_back(iter->hadEnergyHeOuterLayer());
+                    tauTuple().calo_hadEnergyHeInnerLayer.push_back(iter->hadEnergyHeInnerLayer());
+                    tauTuple().calo_energyInHB.push_back(iter->energyInHB());
+                    tauTuple().calo_energyInHE.push_back(iter->energyInHE());
+                    tauTuple().calo_energyInHF.push_back(iter->energyInHF());
+                    tauTuple().calo_energyInHO.push_back(iter->energyInHO());
+                    tauTuple().calo_numBadEcalCells.push_back(iter->numBadEcalCells());
+                    tauTuple().calo_numRecoveredEcalCells.push_back(iter->numRecoveredEcalCells());
+                    tauTuple().calo_numProblematicEcalCells.push_back(iter->numProblematicEcalCells());
+                    tauTuple().calo_numBadHcalCells.push_back(iter->numBadHcalCells());
+                    tauTuple().calo_numRecoveredHcalCells.push_back(iter->numRecoveredHcalCells());
+                    tauTuple().calo_numProblematicHcalCells.push_back(iter->numProblematicHcalCells());
+                    tauTuple().calo_ecalTime.push_back(iter->ecalTime());
+                    tauTuple().calo_hcalTime.push_back(iter->hcalTime());
+                }
+            }
+
+            //pixel tracks
+            for(unsigned n = 0; n < pixelTracks->size(); ++n){
+                const double deltaR = ROOT::Math::VectorUtil::DeltaR(tau->polarP4(), pixelTracks->at(n).momentum());
+                if(deltaR < 0.5){
+                    tauTuple().track_pt.push_back(pixelTracks->at(n).pt());
+                    tauTuple().track_eta.push_back(pixelTracks->at(n).eta());
+                    tauTuple().track_phi.push_back(pixelTracks->at(n).phi());
+                    tauTuple().track_outerOk.push_back(pixelTracks->at(n).outerOk());
+                    tauTuple().track_innerOk.push_back(pixelTracks->at(n).innerOk());
+                    tauTuple().track_found.push_back(pixelTracks->at(n).found());
+                    tauTuple().track_lost.push_back(pixelTracks->at(n).lost());
+                    tauTuple().track_chi2.push_back(pixelTracks->at(n).chi2());
+                    tauTuple().track_ndof.push_back(pixelTracks->at(n).ndof());
+                    tauTuple().track_charge.push_back(pixelTracks->at(n).charge());
+                    tauTuple().track_algo.push_back(static_cast<int>(pixelTracks->at(n).algo()));
+                    tauTuple().track_qualityMask.push_back(static_cast<unsigned>(pixelTracks->at(n).qualityMask()));
+                    tauTuple().track_dxy.push_back(pixelTracks->at(n).dxy());
+                    tauTuple().track_dz.push_back(pixelTracks->at(n).dz());
+                    tauTuple().track_vx.push_back(pixelTracks->at(n).vx());
+                    tauTuple().track_vy.push_back(pixelTracks->at(n).vy());
+                    tauTuple().track_vz.push_back(pixelTracks->at(n).vz());
+                    tauTuple().track_ptError.push_back(pixelTracks->at(n).ptError());
+                    tauTuple().track_etaError.push_back(pixelTracks->at(n).etaError());
+                    tauTuple().track_phiError.push_back(pixelTracks->at(n).phiError());
+                    tauTuple().track_dxyError.push_back(pixelTracks->at(n).dxyError());
+                    tauTuple().track_dzError.push_back(pixelTracks->at(n).dzError());
+                }
+
+            }
+
             FillPFCandidates(tauJet.cands);
             FillElectrons(tauJet.electrons);
             FillMuons(tauJet.muons,tauJet.cands);
@@ -506,18 +608,18 @@ private:
     //     return true;
     // }
 
-    void FillGenMatchResult(const gen_truth::LeptonMatchResult& leptonMatch, const gen_truth::QcdMatchResult& qcdMatch)
+    void FillGenMatchResult(const analysis::gen_truth::LeptonMatchResult& leptonMatch, const analysis::gen_truth::QcdMatchResult& qcdMatch)
     {
-        const bool has_lepton = leptonMatch.match != GenLeptonMatch::NoMatch;
+        const bool has_lepton = leptonMatch.match != analysis::GenLeptonMatch::NoMatch;
         tauTuple().lepton_gen_match = static_cast<int>(leptonMatch.match);
-        tauTuple().lepton_gen_charge = has_lepton ? leptonMatch.gen_particle->charge() : default_int_value;
-        tauTuple().lepton_gen_pt = has_lepton ? static_cast<float>(leptonMatch.gen_particle->polarP4().pt())
+        tauTuple().lepton_gen_charge = has_lepton ? leptonMatch.gen_particle_lastCopy->charge() : default_int_value;
+        tauTuple().lepton_gen_pt = has_lepton ? static_cast<float>(leptonMatch.gen_particle_lastCopy->polarP4().pt())
                                               : default_value;
-        tauTuple().lepton_gen_eta = has_lepton ? static_cast<float>(leptonMatch.gen_particle->polarP4().eta())
+        tauTuple().lepton_gen_eta = has_lepton ? static_cast<float>(leptonMatch.gen_particle_lastCopy->polarP4().eta())
                                                : default_value;
-        tauTuple().lepton_gen_phi = has_lepton ? static_cast<float>(leptonMatch.gen_particle->polarP4().phi())
+        tauTuple().lepton_gen_phi = has_lepton ? static_cast<float>(leptonMatch.gen_particle_lastCopy->polarP4().phi())
                                                : default_value;
-        tauTuple().lepton_gen_mass = has_lepton ? static_cast<float>(leptonMatch.gen_particle->polarP4().mass())
+        tauTuple().lepton_gen_mass = has_lepton ? static_cast<float>(leptonMatch.gen_particle_lastCopy->polarP4().mass())
                                                 : default_value;
         for(auto daughter : leptonMatch.visible_daughters) {
             tauTuple().lepton_gen_vis_pdg.push_back(daughter->pdgId());
@@ -527,7 +629,7 @@ private:
             tauTuple().lepton_gen_vis_mass.push_back(static_cast<float>(daughter->polarP4().mass()));
         }
 
-        const bool has_qcd = qcdMatch.match != GenQcdMatch::NoMatch;
+        const bool has_qcd = qcdMatch.match != analysis::GenQcdMatch::NoMatch;
         tauTuple().qcd_gen_match = static_cast<int>(qcdMatch.match);
         tauTuple().qcd_gen_charge = has_qcd ? qcdMatch.gen_particle->charge() : default_int_value;
         tauTuple().qcd_gen_pt = has_qcd ? static_cast<float>(qcdMatch.gen_particle->polarP4().pt()) : default_value;
@@ -737,6 +839,9 @@ private:
     edm::EDGetTokenT<std::vector<reco::RecoEcalCandidate>> electrons_token;
     edm::EDGetTokenT<reco::MuonCollection> muons_token;
     edm::EDGetTokenT<std::vector<reco::PFTau>> taus_token;
+    edm::EDGetTokenT<l1t::TauBxCollection> l1Taus_token;
+    edm::EDGetTokenT<CaloTowerCollection> caloTowers_token;
+    edm::EDGetTokenT<reco::TrackCollection> pixelTracks_token;
     //edm::EDGetTokenT<pat::JetCollection> jets_token;
     edm::EDGetTokenT<std::vector<reco::PFCandidate>> cands_token;
     edm::EDGetTokenT<reco::PFTauDiscriminator> decayMode_token;
