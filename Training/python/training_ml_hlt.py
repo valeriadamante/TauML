@@ -9,21 +9,7 @@ py = psutil.Process(pid)
 
 print(py.memory_info())
 
-ROOT.gInterpreter.Declare("""
-struct Data {
-    Data(size_t n) : x(n), y(n) {}
-    std::vector<float> x, y;
-};
-struct DataLoader {
-    DataLoader(size_t _n) : n(_n) {}
-    Data LoadNext()
-    {
-        return Data(n);
-    }
-private:
-    size_t n;
-};
-""")
+ROOT.gInterpreter.Declare('#include "../interface/DataLoader.h"')
 
 data_loader = ROOT.DataLoader(int(1e9))
 for n in range(100):
