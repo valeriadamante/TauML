@@ -16,6 +16,84 @@ struct Data {
     std::vector<bool> isTau;
 };
 
+struct Descriptor {
+public:
+    using Tau = train_tuple::Tau; //singolo evento
+    using TrainTuple = train_tuple::TrainTuple;
+
+    Descriptor(std::vector<std::string> _inputFile_names, bool _require_match) : {}
+
+    const Event& getEvt() const { *tuple.get(); }
+    const size_t getL1Index() const { currindex_l1_tau}
+    bool GetNext()
+    {
+        while(GoToNext()) {
+            if(event.l1Tau_pt.at(n) <= 20) continue;
+            if(std::abs(event.l1Tau_eta.at(n)) >= 2.1) continue;
+            if(require_match){
+                for(unsigned h = 0; h < event.lepton_gen_match.size(); ++h){
+                    if(event.lepton_gen_match.at(h) != 5) continue;
+                    if(event.lepton_gen_visible_p4_pt.at(h) <= 20) continue;
+                    if(std::abs(event.lepton_gen_visible_p4_eta.at(h)) >= 2.1) continue;
+                    float delta_eta = event.l1Tau_eta.at(n) - event.lepton_gen_visible_p4_eta.at(h);
+                    float delta_phi = ROOT::TVector2::Phi_mpi_pi(event.l1Tau_phi.at(n) - event.lepton_gen_visible_p4_phi.at(h));
+                    float deltaR = std::sqrt(delta_eta*delta_eta + delta_phi*delta_phi);
+                    if(deltaR < 0.4){
+                        matched_l1 = true;
+                        return true;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+
+private:
+
+    bool GoToNext()
+    {
+        if(!initialized){
+            file_index = 0;
+            index_tuple = 0;
+            index_l1_tau = 0;
+        }
+
+        while(true) {
+            if(index_l1_tau + 1 < (*ntuple)().l1Tau_pt.size()) {
+                ++index_l1_tau;
+                return true;
+            }
+            if(index_tuple < ntuple.GetEntries()) {
+                ++index_tuple;
+                ntuple.GetEntry(index_tuple);
+                index_l1_tau = -1;
+                continue;
+            }
+            if(file_index < inputFile_names.size()){
+                ++file_index;
+                inputFile_names.at(file_index);
+                index_tuple = -1;
+                index_l1_tau = -1;
+                continue;
+            }
+            initialized = true;
+            return false;
+        }
+    }
+
+    std::vector<std::string> inputFile_names;
+    bool require_match;
+    size_t file_index;
+    std::shared<TFile> file_opened;
+    std::shared<TrainTuple> ntuple;
+    Long64_t index_tuple;
+    Int_t index_l1_tau;
+    bool initialized;
+
+
+
+};
+
 
 class DataLoader {
 public:
@@ -64,7 +142,7 @@ public:
 
                 std::sort(calo_indexes.begin(),calo_indexes.end(),Comparitor_energy);
                 calo_most_index = calo_indexes.at(0);
-                for(unsigned index = 0; index < 9; ++index){
+                for(unsigned index = 0; index < 10; ++index){
                     calo_index = calo_indexes.at(index);
                     data.caloTowers.push_back(eventTau.caloTower_eta.at(calo_most_index));
                     data.caloTowers.push_back(eventTau.caloTower_eta.at(calo_most_index)-eventTau.caloTower_eta.at(calo_index));
@@ -103,7 +181,7 @@ public:
                 };
 
                 std::sort(pixel_indexes.begin(),pixel_indexes.end(),Comparitor_pt);
-                for(unsigned id = 0; id < 9; ++id){
+                for(unsigned id = 0; id < 10; ++id){
                     pixel_index = pixel_indexes.at(id);
                     data.pixelTracks.push_back(eventTau.caloTower_eta.at(calo_most_index));
                     data.pixelTracks.push_back(eventTau.caloTower_eta.at(calo_most_index)-eventTau.track_eta.at(pixel_index));
@@ -136,38 +214,7 @@ public:
         return data;
     }
 
-    Tau GetTau(const TrainTuple& trainTuple, size_t index_L1_tau)
-    {
-        //Loop over events
-        for(auto event : trainTuple){
-            bool matched_l1 = false;
-            for(unsigned n = 0; n < event.l1Tau_pt.size(); ++n){
-                if(event.l1Tau_pt.at(n) <= 20) continue;
-                if(std::abs(event.l1Tau_eta.at(n)) >= 2.1) continue;
-                if(file_id == 0){
-                    for(unsigned h = 0; h < event.lepton_gen_match.size(); ++h){
-                        if(event.lepton_gen_match.at(h) != 5) continue;
-                        if(event.lepton_gen_visible_p4_pt.at(h) <= 20) continue;
-                        if(std::abs(event.lepton_gen_visible_p4_eta.at(h)) >= 2.1) continue;
-                        float delta_eta = event.l1Tau_eta.at(n) - event.lepton_gen_visible_p4_eta.at(h);
-                        float delta_phi = ROOT::TVector2::Phi_mpi_pi(event.l1Tau_phi.at(n) - event.lepton_gen_visible_p4_phi.at(h));
-                        float deltaR = std::sqrt(delta_eta*delta_eta + delta_phi*delta_phi);
-                        if(deltaR < 0.4){
-                            matched_l1 = true;
-                        }
-                    }
-                }
-                if(file_id == 1){
-                    matched_l1 = true;
-                }
-                if(matched_l1){
-                    index_L1_tau = n;
-                    return event;
-                }
-            }
 
-        }
-        //return index of L1 tau and event
     }
 
 
